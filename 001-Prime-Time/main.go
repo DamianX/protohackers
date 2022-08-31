@@ -2,6 +2,8 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"math/big"
@@ -59,6 +61,13 @@ func handleConnection(conn net.Conn) {
 }
 
 func handleRequest(jayson string, conn net.Conn) error {
+	if !json.Valid([]byte(jayson)) {
+		log.Print("Potentially malformed json received: ")
+		conn.Write([]byte(jayson))
+		conn.Close()
+		return errors.New("invalid JSON")
+	}
+
 	method, err := jsonparser.GetUnsafeString([]byte(jayson), "method")
 	if err != nil || method != "isPrime" {
 		log.Print("Potentially malformed json received: ")
