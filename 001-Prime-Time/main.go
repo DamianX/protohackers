@@ -41,7 +41,9 @@ func handleConnection(conn net.Conn) {
 	scanner := bufio.NewScanner(conn)
 	for scanner.Scan() {
 		conn.SetDeadline(time.Now().Add(time.Second * 5))
-		err := handleRequest(scanner.Text(), conn)
+		line := scanner.Text()
+		log.Print("Received: ", line)
+		err := handleRequest(line, conn)
 		if err != nil {
 			log.Print(err)
 			conn.Close()
@@ -59,7 +61,7 @@ func handleConnection(conn net.Conn) {
 func handleRequest(jayson string, conn net.Conn) error {
 	method, err := jsonparser.GetUnsafeString([]byte(jayson), "method")
 	if err != nil || method != "isPrime" {
-		log.Print("Potentially malformed json received.")
+		log.Print("Potentially malformed json received: ")
 		conn.Write([]byte(jayson))
 		conn.Close()
 		return err
