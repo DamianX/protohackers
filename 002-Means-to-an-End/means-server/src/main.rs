@@ -59,7 +59,7 @@ fn handle_connection(mut stream: std::net::TcpStream) {
                         [min_time, max_time],
                         |row| row.get(0),
                     )
-                    .unwrap();
+                    .unwrap_or(0.0);
                 
                 stream.write_i32::<BigEndian>(avg as i32).unwrap();
             }
