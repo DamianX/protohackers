@@ -53,14 +53,15 @@ fn handle_connection(mut stream: std::net::TcpStream) {
             'Q' => {
                 let min_time = first_num;
                 let max_time = second_num;
-                let avg: i32 = db
+                let avg: f32 = db
                     .query_row(
                         "SELECT avg(price) FROM means WHERE timestamp BETWEEN ? AND ?",
                         [min_time, max_time],
                         |row| row.get(0),
                     )
                     .unwrap();
-                stream.write_i32::<BigEndian>(avg).unwrap();
+                
+                stream.write_i32::<BigEndian>(avg as i32).unwrap();
             }
             c => panic!("Unknown type {}", c),
         }
